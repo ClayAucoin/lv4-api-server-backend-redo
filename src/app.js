@@ -12,6 +12,9 @@ app.use(express.urlencoded({ extended: true }))
 // utils
 import { sendError } from "./utils/sendError.js"
 
+// validators
+import { validateId } from "./middleware/validators.js"
+
 // data
 import data from "./data.js"
 
@@ -29,12 +32,35 @@ app.get("/", (req, res, next) => {
 })
 
 // list-movies route
-app.get("/list-movies", (req, res, next) => {
+app.get("/movies", (req, res, next) => {
   try {
     console.log("GET /list-movies")
     res.status(200).json({
       ok: true,
       data: data
+    })
+  } catch (err) {
+    next(sendError(500, "Failed to read data", "READ_ERROR"))
+  }
+})
+
+// find-movie route
+app.get("/movies/:id", validateId, (req, res, next) => {
+  try {
+    console.log("GET /find-movie/id")
+
+    console.log("id:", req.params, "typeof:", typeof req.params)
+
+    const id = Number(req.params.id)
+    const movie = data.find((entry) => entry.id === id)
+
+    if (!movie) {
+      return next(sendError(404, "Movie not found", "NOT_FOUND"))
+    }
+
+    res.status(200).json({
+      ok: true,
+      data: movie
     })
   } catch (err) {
     next(sendError(500, "Failed to read data", "READ_ERROR"))
