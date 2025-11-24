@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: true }))
 import { sendError } from "./utils/sendError.js"
 
 // validators
-import { validateId } from "./middleware/validators.js"
+import { validateId, validateMovieBody } from "./middleware/validators.js"
 
 // data
 import data from "./data.js"
@@ -31,10 +31,10 @@ app.get("/", (req, res, next) => {
   }
 })
 
-// list-movies route
+// movies route: list all movies
 app.get("/movies", (req, res, next) => {
   try {
-    console.log("GET /list-movies")
+    console.log("GET /movies")
     res.status(200).json({
       ok: true,
       data: data
@@ -44,10 +44,10 @@ app.get("/movies", (req, res, next) => {
   }
 })
 
-// find-movie route
+// movies route: find selected movie
 app.get("/movies/:id", validateId, (req, res, next) => {
   try {
-    console.log("GET /find-movie/id")
+    console.log("GET /movies/id")
 
     console.log("id:", req.params, "typeof:", typeof req.params)
 
@@ -64,6 +64,23 @@ app.get("/movies/:id", validateId, (req, res, next) => {
     })
   } catch (err) {
     next(sendError(500, "Failed to read data", "READ_ERROR"))
+  }
+})
+
+// movie route: add movie
+app.post("/movies/", validateMovieBody, (req, res, next) => {
+  try {
+    console.log("POST /movie/", req.body)
+    const newMovie = req.body
+    data.push(newMovie)
+
+    res.status(200).json({
+      ok: true,
+      message: "Movie added successfuly",
+      data: newMovie
+    })
+  } catch (err) {
+    next(sendError(500, "Failed to add data", "WRITE_ERROR"))
   }
 })
 
