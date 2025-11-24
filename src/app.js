@@ -28,6 +28,20 @@ app.get("/", (req, res, next) => {
   }
 })
 
+// list-movies route
+app.get("/list-movies", (req, res, next) => {
+  try {
+    console.log("GET /list-movies")
+    res.status(200).json({
+      ok: true,
+      data: data
+    })
+  } catch (err) {
+    next(sendError(500, "Failed to read data", "READ_ERROR"))
+  }
+})
+
+
 
 
 export function globalErrorHandler(err, req, res, next) {
