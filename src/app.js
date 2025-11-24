@@ -31,7 +31,8 @@ app.get("/", (req, res, next) => {
   }
 })
 
-// movies route: list all movies
+// movies route
+// list all movies
 app.get("/movies", (req, res, next) => {
   try {
     console.log("GET /movies")
@@ -44,7 +45,7 @@ app.get("/movies", (req, res, next) => {
   }
 })
 
-// movies route: find selected movie
+// find selected movie
 app.get("/movies/:id", validateId, (req, res, next) => {
   try {
     console.log("GET /movies/id")
@@ -67,7 +68,7 @@ app.get("/movies/:id", validateId, (req, res, next) => {
   }
 })
 
-// movie route: add movie
+// add movie
 app.post("/movies/", validateMovieBody, (req, res, next) => {
   try {
     console.log("POST /movie/", req.body)
@@ -84,10 +85,39 @@ app.post("/movies/", validateMovieBody, (req, res, next) => {
   }
 })
 
+// delete movie
+app.delete("/movies/:id", validateId, (req, res, next) => {
+  // try {
+  console.log("DELETE /movies/")
+  const id = Number(req.params.id)
+
+  const index = data.findIndex((movie) => movie.id === id)
+
+  if (index === -1) {
+    return null
+  }
+
+  const [removed] = data.splice(index, 1)
+
+  if (!removed) {
+    return next(sendError(404, "Movie not found", "NOT_FOUND"))
+  }
+
+  res.status(200).json({
+    ok: true,
+    message: "Movie deleted successfully",
+    data: removed
+  })
+  // } catch (err) {
+  //   next(sendError(500, "Failed to delete movie", "REMOVE_ERROR"))
+  // }
+})
+
 
 
 
 export function globalErrorHandler(err, req, res, next) {
+  // console.log("global error handler:", err)
   const status = err.status || 500
   const code = err.code || "INTERNAL_ERROR"
   const message = err.message || "Server error"
