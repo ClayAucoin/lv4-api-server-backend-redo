@@ -39,7 +39,7 @@ app.get("/movies", (req, res, next) => {
 
 // find selected movie
 app.get("/movies/:id", validateId, (req, res, next) => {
-  console.log("GET /movies/id")
+  console.log("GET /movies/:id")
 
   console.log("id:", req.params, "typeof:", typeof req.params)
 
@@ -71,16 +71,10 @@ app.post("/movies/", validateMovieBody, (req, res, next) => {
 
 // delete movie
 app.delete("/movies/:id", validateId, (req, res, next) => {
-  console.log("DELETE /movies/")
+  console.log("DELETE /movies/:id")
   const id = Number(req.params.id)
 
-  const index = data.findIndex((movie) => movie.id === id)
-
-  if (index === -1) {
-    return null
-  }
-
-  const [removed] = data.splice(index, 1)
+  const removed = deleteMovieById(id)
 
   if (!removed) {
     return next(sendError(404, "Movie not found", "NOT_FOUND"))
@@ -93,7 +87,19 @@ app.delete("/movies/:id", validateId, (req, res, next) => {
   })
 })
 
+// helper: delete movie
+export function deleteMovieById(id) {
+  const index = data.findIndex((movie) => movie.id === id)
 
+  if (index === -1) {
+    return null
+  }
+
+  const [removed] = data.splice(index, 1)
+  return removed
+}
+
+// global error function
 export function globalErrorHandler(err, req, res, next) {
   const isAppError = typeof err.status === "number"
 
@@ -119,6 +125,7 @@ export function globalErrorHandler(err, req, res, next) {
   res.status(status).json(payload)
 }
 
+// not gound error function
 export function error404(req, res, next) {
   next(sendError(404, "Route not found", "NOT_FOUND"))
 }
