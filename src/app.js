@@ -20,74 +20,57 @@ import data from "./data.js"
 
 // root route
 app.get("/", (req, res, next) => {
-  try {
-    console.log("GET /root")
-    let response = "<h1>Express Running</h1>"
-    console.log(response)
+  console.log("GET /root")
+  let response = "<h1>Express Running</h1>"
+  console.log(response)
 
-    res.status(200).send(response)
-  } catch (err) {
-    next(sendError(500, "Failed to read data", "READ_ERROR"))
-  }
+  res.status(200).send(response)
 })
 
 // movies route
 // list all movies
 app.get("/movies", (req, res, next) => {
-  try {
-    console.log("GET /movies")
-    res.status(200).json({
-      ok: true,
-      data: data
-    })
-  } catch (err) {
-    next(sendError(500, "Failed to read data", "READ_ERROR"))
-  }
+  console.log("GET /movies")
+  res.status(200).json({
+    ok: true,
+    data: data
+  })
 })
 
 // find selected movie
 app.get("/movies/:id", validateId, (req, res, next) => {
-  try {
-    console.log("GET /movies/id")
+  console.log("GET /movies/id")
 
-    console.log("id:", req.params, "typeof:", typeof req.params)
+  console.log("id:", req.params, "typeof:", typeof req.params)
 
-    const id = Number(req.params.id)
-    const movie = data.find((entry) => entry.id === id)
+  const id = Number(req.params.id)
+  const movie = data.find((entry) => entry.id === id)
 
-    if (!movie) {
-      return next(sendError(404, "Movie not found", "NOT_FOUND"))
-    }
-
-    res.status(200).json({
-      ok: true,
-      data: movie
-    })
-  } catch (err) {
-    next(sendError(500, "Failed to read data", "READ_ERROR"))
+  if (!movie) {
+    return next(sendError(404, "Movie not found", "NOT_FOUND"))
   }
+
+  res.status(200).json({
+    ok: true,
+    data: movie
+  })
 })
 
 // add movie
 app.post("/movies/", validateMovieBody, (req, res, next) => {
-  try {
-    console.log("POST /movie/", req.body)
-    const newMovie = req.body
-    data.push(newMovie)
+  console.log("POST /movie/", req.body)
+  const newMovie = req.body
+  data.push(newMovie)
 
-    res.status(200).json({
-      ok: true,
-      message: "Movie added successfuly",
-      data: newMovie
-    })
-  } catch (err) {
-    next(sendError(500, "Failed to add data", "WRITE_ERROR"))
-  }
+  res.status(200).json({
+    ok: true,
+    message: "Movie added successfuly",
+    data: newMovie
+  })
 })
 
 // delete movie
 app.delete("/movies/:id", validateId, (req, res, next) => {
-  // try {
   console.log("DELETE /movies/")
   const id = Number(req.params.id)
 
@@ -108,19 +91,17 @@ app.delete("/movies/:id", validateId, (req, res, next) => {
     message: "Movie deleted successfully",
     data: removed
   })
-  // } catch (err) {
-  //   next(sendError(500, "Failed to delete movie", "REMOVE_ERROR"))
-  // }
 })
 
 
-
-
 export function globalErrorHandler(err, req, res, next) {
-  // console.log("global error handler:", err)
-  const status = err.status || 500
-  const code = err.code || "INTERNAL_ERROR"
-  const message = err.message || "Server error"
+  const isAppError = typeof err.status === "number"
+
+  if (!isAppError) console.error("UNEXPECTED ERROR:", err.stack || err)
+
+  const status = isAppError ? err.status : 500
+  const code = isAppError ? (err.code || "INTERNAL_ERROR") : "INTERNAL_ERROR"
+  const message = isAppError ? (err.message || "Server error") : "Server error"
 
   const payload = {
     ok: false,
