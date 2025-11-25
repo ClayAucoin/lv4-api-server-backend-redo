@@ -59,7 +59,8 @@ app.get("/movies/:id", validateId, (req, res, next) => {
 // add movie
 app.post("/movies/", validateMovieBody, (req, res, next) => {
   console.log("POST /movie/", req.body)
-  const newMovie = req.body
+  const newId = data.length
+  const newMovie = { ...req.body, id: newId }
   data.push(newMovie)
 
   res.status(200).json({
