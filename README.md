@@ -58,17 +58,18 @@ The project is written in modern ES modules, uses centralised error helpers, and
 ## Project Structure
 
 ```text
-src/
-  app.js                 # Main Express app (routes, error handlers)
-  config.js              # Environment configuration (PORT, NODE_ENV, etc)
-  data.js                # In‑memory movie data
-  index.js               # App listener / entry point
-
-  middleware/
-    validators.js        # validateId & validateMovieBody middleware
-
-  utils/
-    sendError.js         # Helper for building error objects
+.
+└── src/
+    ├── app.js                 # Main Express app (routes, error handlers)
+    ├── config.js              # Environment configuration (PORT, NODE_ENV, etc)
+    ├── data.js                # In‑memory movie data
+    ├── index.js               # App listener / entry point
+    │
+    ├── middleware/
+    │   └── validators.js        # validateId & validateMovieBody middleware
+    │
+    └── utils/
+        └── sendError.js         # Helper for building error objects
 ```
 
 ## Getting Started
